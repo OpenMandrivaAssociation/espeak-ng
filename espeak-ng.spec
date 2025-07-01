@@ -1,22 +1,16 @@
 Name:          espeak-ng
-Version:       1.51.1+20240504git.f57b594
-Release:       1mamba
+Version:       1.52.0
+Release:       1
 Summary:       eSpeak NG is an open source speech synthesizer that supports 108 languages and accents
 Group:         System/Multimedia
-Vendor:        openmamba
-Distribution:  openmamba
-Packager:      Silvan Calarco <silvan.calarco@mambasoft.it>
 URL:           https://github.com/espeak-ng/espeak-ng
-Source:        https://github.com/espeak-ng/espeak-ng.git/master@%{gitcommit}/espeak-ng-%{version}.tar.bz2
+Source:        https://github.com/espeak-ng/espeak-ng/archive/refs/tags/%{version}/%{name}-%{version}.tar.gz
 # Taken from fork used by piper-phonemized
-Patch0:        espeak-ng-1.51.1+20240504git.f57b594-add-espeak_TextToPhonemesWithTerminator.patch
+#Patch0:        espeak-ng-1.51.1+20240504git.f57b594-add-espeak_TextToPhonemesWithTerminator.patch
+#Patch0:         https://build.opensuse.org/projects/science/packages/espeak-ng/files/espeak-ng-add-piper-support.patch
 License:       GPL
-## AUTOBUILDREQ-BEGIN
-BuildRequires: glibc-devel
-BuildRequires: libgcc
-BuildRequires: libstdc++6-devel
-## AUTOBUILDREQ-END
-BuildRequires: ruby-ronn-ng
+
+#BuildRequires: ruby-ronn-ng
 Requires:      lib%{name} = %{?epoch:%epoch:}%{version}-%{release}
 Provides:      espeak
 Obsoletes:     espeak < 1.50
@@ -45,27 +39,17 @@ This package contains libraries and header files for developing applications tha
 %debug_package
 
 %prep
-%setup -q
-%patch 0 -p1 -b .add-espeak_TextToPhonemesWithTerminator
-./autogen.sh
+%autosetup -n %{name}-%{version}
 
 %build
-%configure \
-   CFLAGS="%{optflags} -fcommon"
+%cmake
 
-%make -j1
+%make_build
 
 %install
-[ "%{buildroot}" != / ] && rm -rf "%{buildroot}"
-%makeinstall
+%make_install -C build
 
 rm -f %{buildroot}%{_libdir}/libespeak.la
-
-%clean
-[ "%{buildroot}" != / ] && rm -rf "%{buildroot}"
-
-%post -n lib%{name} -p /sbin/ldconfig
-%postun -n lib%{name} -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root)
