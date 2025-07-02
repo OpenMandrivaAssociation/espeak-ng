@@ -46,6 +46,7 @@ This package contains libraries and header files for developing applications tha
 %prep
 %autosetup -n %{name}-%{version}
 aclocal -Im4
+libtoolize --force --copy
 autoheader
 autoconf
 automake -a --foreign
