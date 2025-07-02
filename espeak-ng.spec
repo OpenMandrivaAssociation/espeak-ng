@@ -41,10 +41,9 @@ Requires:      pkg-config
 %description -n lib%{name}-devel
 This package contains libraries and header files for developing applications that use %{name}.
 
-%debug_package
-
 %prep
 %autosetup -n %{name}-%{version}
+# dont ask why... (angry.p)
 aclocal -Im4
 libtoolize --force --copy
 autoheader
