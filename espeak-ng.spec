@@ -62,7 +62,7 @@ popd
 %make_build
 
 %install
-%make_install -C build
+%make_install
 
 rm -f %{buildroot}%{_libdir}/libespeak.la
 
