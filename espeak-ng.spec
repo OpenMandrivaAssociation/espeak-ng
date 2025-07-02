@@ -11,11 +11,11 @@ Source:        https://github.com/espeak-ng/espeak-ng/archive/refs/tags/%{versio
 License:       GPL
 
 #BuildRequires: ruby-ronn-ng
+BuildRequires: pcaudiolib-devel
 Requires:      lib%{name} = %{?epoch:%epoch:}%{version}-%{release}
 Provides:      espeak
 Obsoletes:     espeak < 1.50
-Provides:      espeak-mbrola
-Obsoletes:     espeak-mbrola < 1.50
+
 
 %description
 eSpeak NG is an open source speech synthesizer that supports 108 languages and accents.
