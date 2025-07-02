@@ -52,6 +52,7 @@ autoconf
 automake -a --foreign
 
 pushd src/ucd-tools
+touch NEWS
 libtoolize --force --copy
 autoreconf -fi
 popd
