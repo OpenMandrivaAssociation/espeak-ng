@@ -51,6 +51,11 @@ autoheader
 autoconf
 automake -a --foreign
 
+pushd src/ucd-tools
+libtoolize --force --copy
+autoreconf -fi
+popd
+
 %build
 %configure
 %make_build
