@@ -43,7 +43,7 @@ This package contains libraries and header files for developing applications tha
 %autosetup -n %{name}-%{version}
 
 %build
-%cmake
+%cmake -DCOMPILE_INTONATIONS=OFF
 
 %make_build
 
