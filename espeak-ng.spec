@@ -102,7 +102,6 @@ rm -f %{buildroot}%{_libdir}/libespeak.la
 %dir %{_includedir}/espeak-ng
 %{_includedir}/espeak-ng/*.h
 %{_includedir}/espeak/speak_lib.h
-%{_libdir}/libespeak-ng.a
 %{_libdir}/libespeak-ng.so
 %{_libdir}/pkgconfig/espeak-ng.pc
 %doc README.md
