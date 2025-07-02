@@ -43,9 +43,7 @@ This package contains libraries and header files for developing applications tha
 %autosetup -n %{name}-%{version}
 
 %build
-export CC=gcc
-export CXX=g++
-%cmake
+%configure
 %make_build
 
 %install
