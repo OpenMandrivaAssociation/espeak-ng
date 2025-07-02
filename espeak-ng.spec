@@ -13,6 +13,10 @@ License:       GPL
 #BuildRequires: ruby-ronn-ng
 BuildRequires: pcaudiolib-devel
 BuildRequires: %{_lib}sonic-devel
+BuildRequires: autoconf
+BuildRequires: automake
+BuildRequires: libtool
+BuildRequires: pkgconfig
 Requires:      lib%{name} = %{?epoch:%epoch:}%{version}-%{release}
 Provides:      espeak
 Obsoletes:     espeak < 1.50
