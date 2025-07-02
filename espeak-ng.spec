@@ -43,6 +43,7 @@ This package contains libraries and header files for developing applications tha
 %autosetup -n %{name}-%{version}
 
 %build
+./autogen.sh
 %configure
 %make_build
 
