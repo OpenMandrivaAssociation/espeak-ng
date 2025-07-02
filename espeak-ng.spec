@@ -45,7 +45,10 @@ This package contains libraries and header files for developing applications tha
 
 %prep
 %autosetup -n %{name}-%{version}
-./autogen.sh
+aclocal -Im4
+autoheader
+autoconf
+automake -a --foreign
 
 %build
 %configure
