@@ -91,8 +91,6 @@ rm -f %{buildroot}%{_libdir}/libespeak.la
 %{_datadir}/vim/addons/syntax/espeaklist.vim
 %{_datadir}/vim/addons/syntax/espeakrules.vim
 %{_datadir}/vim/registry/espeak.yaml
-%{_mandir}/man1/espeak-ng.1*
-%{_mandir}/man1/speak-ng.1*
 
 %files -n lib%{name}
 %defattr(-,root,root)
