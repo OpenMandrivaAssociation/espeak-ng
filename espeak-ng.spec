@@ -43,8 +43,9 @@ This package contains libraries and header files for developing applications tha
 %autosetup -n %{name}-%{version}
 
 %build
-%cmake -DCOMPILE_INTONATIONS=OFF
-
+export CC=gcc
+export CXX=g++
+%cmake
 %make_build
 
 %install
