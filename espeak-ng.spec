@@ -1,3 +1,7 @@
+%define major      1
+%define libname    %mklibname %{name}
+%define libnamedev %mklibname %{name} -d
+
 Name:          espeak-ng
 Version:       1.52.0
 Release:       1
@@ -25,25 +29,39 @@ Obsoletes:     espeak < 1.50
 %description
 eSpeak NG is an open source speech synthesizer that supports 108 languages and accents.
 
-%package -n lib%{name}
-Group:         System/Libraries
-Summary:       Shared libraries for %{name}
+%package -n     %{libname}
+Summary:        Text to speech library (eSpeak NG)
+Group:          System/Libraries
+Requires:       %{name}  = %{EVRD}
 
-%description -n lib%{name}
-This package contains shared libraries for %{name}.
+%description -n %{libname}
+The eSpeak NG (Next Generation) Text-to-Speech program is an open source speech
+synthesizer that supports over 70 languages. It is based on the eSpeak engine
+created by Jonathan Duddington. It uses spectral formant synthesis by default
+which sounds robotic, but can be configured to use Klatt formant synthesis
+or MBROLA to give it a more natural sound.
 
-%package -n lib%{name}-devel
-Group:         Development/Libraries
-Summary:       Development files for %{name}
-Requires:      lib%{name} = %{?epoch:%epoch:}%{version}-%{release}
-Requires:      pkg-config
+#------------------------------------------------
 
-%description -n lib%{name}-devel
-This package contains libraries and header files for developing applications that use %{name}.
+%package -n     %{libnamedev}
+Summary:        Development files for %{name}
+Group:          Development/C++
+Requires:       %{libname}  = %{EVRD}
+Provides:       %{name}-devel =  = %{EVRD}
+
+%description -n %{libnamedev}
+Development files for eSpeak NG, a software speech synthesizer.
 
 %prep
 %autosetup -n %{name}-%{version}
-# dont ask why... (angry.p)
+# needed because (angry.p)
+#running autogen.sh cause
+#configure.ac:10: error: required file 'config.h.in' not found
+#next running autoheader gives configure.ac:4: error: required file './ltmain.sh' not found
+#next, running also libtoolize --force --copy cause missing config.h.in but this time in subdir src/ucd-tools.
+#running autoreconf in subdir cause: Makefile.am: error: required file './NEWS' not found
+#fixed by simple touch NEWS.
+
 aclocal -Im4
 libtoolize --force --copy
 autoheader
@@ -57,6 +75,8 @@ autoreconf -fi
 popd
 
 %build
+# autotools insead of cmake because it fail with this during compilation: espeak-ng: error while loading shared libraries: libespeak-ng.so.1: cannot open shared object file: No such file or directory
+# build proces require library before package is build... maybe need some weird bootstrap stuff. Autotools fixes it.
 %configure
 %make_build
 
@@ -66,7 +86,6 @@ popd
 rm -f %{buildroot}%{_libdir}/libespeak.la
 
 %files
-%defattr(-,root,root)
 %{_bindir}/espeak
 %{_bindir}/espeak-ng
 %{_bindir}/speak
@@ -92,13 +111,11 @@ rm -f %{buildroot}%{_libdir}/libespeak.la
 %{_datadir}/vim/addons/syntax/espeakrules.vim
 %{_datadir}/vim/registry/espeak.yaml
 
-%files -n lib%{name}
-%defattr(-,root,root)
-%{_libdir}/libespeak-ng.so.*
+%files -n %{libname}
+%{_libdir}/libespeak-ng.so.%{major}*
 %doc COPYING
 
-%files -n lib%{name}-devel
-%defattr(-,root,root)
+%files -n %{libnamedev}
 %dir %{_includedir}/espeak-ng
 %{_includedir}/espeak-ng/*.h
 %{_includedir}/espeak/speak_lib.h
