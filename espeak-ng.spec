@@ -21,7 +21,7 @@ BuildRequires: autoconf
 BuildRequires: automake
 BuildRequires: libtool
 BuildRequires: pkgconfig
-Requires:      lib%{name} = %{?epoch:%epoch:}%{version}-%{release}
+Requires:      %{libname}  = %{EVRD}
 Provides:      espeak
 Obsoletes:     espeak < 1.50
 
@@ -47,7 +47,7 @@ or MBROLA to give it a more natural sound.
 Summary:        Development files for %{name}
 Group:          Development/C++
 Requires:       %{libname}  = %{EVRD}
-Provides:       %{name}-devel =  = %{EVRD}
+Provides:       %{name}-devel = %{EVRD}
 
 %description -n %{libnamedev}
 Development files for eSpeak NG, a software speech synthesizer.
