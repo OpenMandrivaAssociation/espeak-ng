@@ -4,7 +4,7 @@
 
 Name:          espeak-ng
 Version:       1.52.0
-Release:       1
+Release:       2
 Summary:       eSpeak NG is an open source speech synthesizer that supports 108 languages and accents
 Group:         System/Multimedia
 URL:           https://github.com/espeak-ng/espeak-ng
@@ -25,6 +25,9 @@ Requires:      %{libname}  = %{EVRD}
 Provides:      espeak
 Obsoletes:     espeak < 1.50
 
+%patchlist
+# From https://github.com/rhasspy/espeak-ng
+https://github.com/espeak-ng/espeak-ng/pull/2127.patch
 
 %description
 eSpeak NG is an open source speech synthesizer that supports 108 languages and accents.
@@ -53,7 +56,7 @@ Provides:       %{name}-devel = %{EVRD}
 Development files for eSpeak NG, a software speech synthesizer.
 
 %prep
-%autosetup -n %{name}-%{version}
+%autosetup -p1 -n %{name}-%{version}
 # needed because (angry.p)
 #running autogen.sh cause
 #configure.ac:10: error: required file 'config.h.in' not found
