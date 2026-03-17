@@ -106,7 +106,7 @@ Development files for eSpeak NG, a software speech synthesizer.
 
 %build
 %cmake -DENABLE_TESTS=OFF
-%make_build
+%make_build -j1
 
 
 %install
