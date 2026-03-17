@@ -2,126 +2,119 @@
 %define libname    %mklibname %{name}
 %define libnamedev %mklibname %{name} -d
 
-Name:          espeak-ng
-Version:       1.52.0
-Release:       2
-Summary:       eSpeak NG is an open source speech synthesizer that supports 108 languages and accents
-Group:         System/Multimedia
-URL:           https://github.com/espeak-ng/espeak-ng
-Source:        https://github.com/espeak-ng/espeak-ng/archive/refs/tags/%{version}/%{name}-%{version}.tar.gz
-# Taken from fork used by piper-phonemized
-#Patch0:        espeak-ng-1.51.1+20240504git.f57b594-add-espeak_TextToPhonemesWithTerminator.patch
-#Patch0:         https://build.opensuse.org/projects/science/packages/espeak-ng/files/espeak-ng-add-piper-support.patch
-License:       GPL
+%bcond_with	mbrola
 
-#BuildRequires: ruby-ronn-ng
-BuildRequires: pcaudiolib-devel
-BuildRequires: %{_lib}sonic-devel
-BuildRequires: autoconf
-BuildRequires: automake
-BuildRequires: libtool
-BuildRequires: pkgconfig
-Requires:      %{libname}  = %{EVRD}
-Provides:      espeak
-Obsoletes:     espeak < 1.50
+Summary:		An open source speech synthesizer that supports 108 languages and accents
+Name:	espeak-ng
+Version:		1.52.0.1
+Release:		1
+License:		GPLv3
+Group:	Sound
+Url:	https://github.com/espeak-ng/espeak-ng
+Source0:	%{name}-%{version}.tar.xz
+#Source0:	https://github.com/espeak-ng/espeak-ng/archive/refs/tags/%%{version}/%%{name}-%%{version}.tar.gz
+Source100:	%{name}.rpmlintrc
+BuildRequires:		cmake
+BuildRequires:		make
+# Not provided yet - https://github.com/numediart/MBROLA
+#BuildRequires:		mbrola
+BuildRequires:		pkgconfig
+#BuildRequires:		ronn
+#BuildRequires:		rubygem-ronn
+BuildRequires:		pcaudiolib-devel
+BuildRequires:		%{_lib}sonic-devel
+%rename	espeak
 
-%patchlist
-# From https://github.com/rhasspy/espeak-ng
-https://github.com/espeak-ng/espeak-ng/pull/2127.patch
+#patchlist
 
 %description
-eSpeak NG is an open source speech synthesizer that supports 108 languages and accents.
+This is an open source speech synthesizer that supports 108 languages and
+accents.  It is based on the eSpeak engine created by Jonathan Duddington.
+It uses spectral formant synthesis by default which sounds robotic, but can be
+configured to use Klatt formant synthesis or MBROLA to give it a more natural
+sound.
 
-%package -n     %{libname}
-Summary:        Text to speech library (eSpeak NG)
-Group:          System/Libraries
-Requires:       %{name}  = %{EVRD}
+%files
+%license COPYING
+%doc docs/*.md ChangeLog.md README.md
+%{_bindir}/espeak
+%{_bindir}/%{name}
+%{_bindir}/speak
+%{_bindir}/speak-ng
+%dir %{_datadir}/%{name}-data
+%{_datadir}/%{name}-data/*_dict
+%{_datadir}/%{name}-data/intonations
+%dir %{_datadir}/%{name}-data/lang
+%{_datadir}/%{name}-data/lang/*
+%if %{with mbrola}
+%dir %{_datadir}/%{name}-data/mbrola_ph
+%{_datadir}/%{name}-data/mbrola_ph/*
+%dir %{_datadir}/%{name}-data/voices/mb
+%{_datadir}/%{name}-data/voices/mb/*
+%endif
+%{_datadir}/%{name}-data/phondata
+%{_datadir}/%{name}-data/phondata-manifest
+%{_datadir}/%{name}-data/phonindex
+%{_datadir}/%{name}-data/phontab
+%dir %{_datadir}/%{name}-data/voices
+%dir %{_datadir}/%{name}-data/voices/!v
+%{_datadir}/%{name}-data/voices/!v/*
+%{_datadir}/vim/vimfiles/ftdetect/espeakfiletype.vim
+%{_datadir}/vim/vimfiles/syntax/espeaklist.vim
+%{_datadir}/vim/vimfiles/syntax/espeakrules.vim
+%{_datadir}/vim/registry/espeak.yaml
+
+#-----------------------------------------------------------------------------
+
+%package -n %{libname}
+Summary: 	Text to speech library (eSpeak NG)
+Group:	System/Libraries
+Requires:	%{name}  = %{EVRD}
 
 %description -n %{libname}
 The eSpeak NG (Next Generation) Text-to-Speech program is an open source speech
-synthesizer that supports over 70 languages. It is based on the eSpeak engine
-created by Jonathan Duddington. It uses spectral formant synthesis by default
-which sounds robotic, but can be configured to use Klatt formant synthesis
-or MBROLA to give it a more natural sound.
+synthesizer that supports over 108 languages.
 
-#------------------------------------------------
+%files -n %{libname}
+%license COPYING COPYING.*
+%{_libdir}/lib%{name}.so.%{major}*
 
-%package -n     %{libnamedev}
-Summary:        Development files for %{name}
-Group:          Development/C++
-Requires:       %{libname}  = %{EVRD}
-Provides:       %{name}-devel = %{EVRD}
+#-----------------------------------------------------------------------------
+
+%package -n %{libnamedev}
+Summary:		Development files for %{name}
+Group:	Development/C++
+Requires:	%{libname} = %{EVRD}
+Provides:	%{name}-devel = %{EVRD}
 
 %description -n %{libnamedev}
 Development files for eSpeak NG, a software speech synthesizer.
 
+%files -n %{libnamedev}
+%license COPYING COPYING.*
+%dir %{_includedir}/%{name}
+%{_includedir}/%{name}/*.h
+%{_includedir}/espeak/speak_lib.h
+%{_libdir}/lib%{name}.so
+%{_libdir}/pkgconfig/%{name}.pc
+
+#-----------------------------------------------------------------------------
+
 %prep
 %autosetup -p1 -n %{name}-%{version}
-# needed because (angry.p)
-#running autogen.sh cause
-#configure.ac:10: error: required file 'config.h.in' not found
-#next running autoheader gives configure.ac:4: error: required file './ltmain.sh' not found
-#next, running also libtoolize --force --copy cause missing config.h.in but this time in subdir src/ucd-tools.
-#running autoreconf in subdir cause: Makefile.am: error: required file './NEWS' not found
-#fixed by simple touch NEWS.
 
-aclocal -Im4
-libtoolize --force --copy
-autoheader
-autoconf
-automake -a --foreign
-
-pushd src/ucd-tools
-touch NEWS
-libtoolize --force --copy
-autoreconf -fi
-popd
 
 %build
-# autotools insead of cmake because it fail with this during compilation: espeak-ng: error while loading shared libraries: libespeak-ng.so.1: cannot open shared object file: No such file or directory
-# build proces require library before package is build... maybe need some weird bootstrap stuff. Autotools fixes it.
-%configure
+%cmake -DENABLE_TESTS=OFF
 %make_build
 
+
 %install
-%make_install
+%make_install -C build
 
-rm -f %{buildroot}%{_libdir}/libespeak.la
-
-%files
-%{_bindir}/espeak
-%{_bindir}/espeak-ng
-%{_bindir}/speak
-%{_bindir}/speak-ng
-%dir %{_datadir}/espeak-ng-data
-%{_datadir}/espeak-ng-data/*_dict
-%{_datadir}/espeak-ng-data/intonations
-%dir %{_datadir}/espeak-ng-data/lang
-%{_datadir}/espeak-ng-data/lang/*
-%dir %{_datadir}/espeak-ng-data/mbrola_ph
-%{_datadir}/espeak-ng-data/mbrola_ph/*
-%{_datadir}/espeak-ng-data/phondata
-%{_datadir}/espeak-ng-data/phondata-manifest
-%{_datadir}/espeak-ng-data/phonindex
-%{_datadir}/espeak-ng-data/phontab
-%dir %{_datadir}/espeak-ng-data/voices
-%dir %{_datadir}/espeak-ng-data/voices/!v
-%{_datadir}/espeak-ng-data/voices/!v/*
-%dir %{_datadir}/espeak-ng-data/voices/mb
-%{_datadir}/espeak-ng-data/voices/mb/*
-%{_datadir}/vim/addons/ftdetect/espeakfiletype.vim
-%{_datadir}/vim/addons/syntax/espeaklist.vim
-%{_datadir}/vim/addons/syntax/espeakrules.vim
-%{_datadir}/vim/registry/espeak.yaml
-
-%files -n %{libname}
-%{_libdir}/libespeak-ng.so.%{major}*
-%doc COPYING
-
-%files -n %{libnamedev}
-%dir %{_includedir}/espeak-ng
-%{_includedir}/espeak-ng/*.h
-%{_includedir}/espeak/speak_lib.h
-%{_libdir}/libespeak-ng.so
-%{_libdir}/pkgconfig/espeak-ng.pc
-%doc README.md
+# Put the pkgconfig file in the right place...
+mkdir -p %{buildroot}%{_libdir}/pkgconfig/
+mv %{buildroot}/usr/lib/pkgconfig/%{name}.pc %{buildroot}%{_libdir}/pkgconfig/
+# ... and also the vim registry file
+mkdir -p %{buildroot}%{_datadir}/vim/registry/
+install -m 0644 vim/registry/espeak.yaml %{buildroot}%{_datadir}/vim/registry/

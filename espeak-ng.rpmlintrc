@@ -1,0 +1,8 @@
+# Locales-ng does not exist
+addFilter("E: no-dependency-on")
+
+# The license files for lib64espeak-ng go in %%{datadir}
+addFilter("E: outside-libdir-files")
+
+# We explicitly require lib64espeak-ng for dev package
+addFilter("E: no-library-dependency-for")
