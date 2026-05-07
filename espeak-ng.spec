@@ -2,6 +2,8 @@
 %define libname    %mklibname %{name}
 %define libnamedev %mklibname %{name} -d
 
+%define	oname	espeak
+
 %bcond_with	mbrola
 
 Summary:		An open source speech synthesizer that supports 108 languages and accents
@@ -11,7 +13,7 @@ Release:		1
 License:		GPLv3
 Group:	Sound
 Url:	https://github.com/espeak-ng/espeak-ng
-Source0:	%{name}-%{version}.tar.xz
+Source0:	%{oname}-%{version}.tar.xz
 #Source0:	https://github.com/espeak-ng/espeak-ng/archive/refs/tags/%%{version}/%%{name}-%%{version}.tar.gz
 Source100:	%{name}.rpmlintrc
 BuildRequires:		cmake
@@ -37,7 +39,7 @@ sound.
 %files
 %license COPYING
 %doc docs/*.md ChangeLog.md README.md
-%{_bindir}/espeak
+%{_bindir}/%{oname}
 %{_bindir}/%{name}
 %{_bindir}/speak
 %{_bindir}/speak-ng
@@ -62,7 +64,7 @@ sound.
 %{_datadir}/vim/vimfiles/ftdetect/espeakfiletype.vim
 %{_datadir}/vim/vimfiles/syntax/espeaklist.vim
 %{_datadir}/vim/vimfiles/syntax/espeakrules.vim
-%{_datadir}/vim/registry/espeak.yaml
+%{_datadir}/vim/registry/%{oname}.yaml
 
 #-----------------------------------------------------------------------------
 
@@ -101,12 +103,12 @@ Development files for eSpeak NG, a software speech synthesizer.
 #-----------------------------------------------------------------------------
 
 %prep
-%autosetup -p1 -n %{name}-%{version}
+%autosetup -p1 -n %{oname}-%{version}
 
 
 %build
-%cmake -DENABLE_TESTS=OFF
-%make_build -j1
+%cmake -DENABLE_TESTS=OFF -DCMAKE_SKIP_RPATH:BOOL=OFF
+%make_build
 
 
 %install
@@ -117,4 +119,4 @@ mkdir -p %{buildroot}%{_libdir}/pkgconfig/
 mv %{buildroot}/usr/lib/pkgconfig/%{name}.pc %{buildroot}%{_libdir}/pkgconfig/
 # ... and also the vim registry file
 mkdir -p %{buildroot}%{_datadir}/vim/registry/
-install -m 0644 vim/registry/espeak.yaml %{buildroot}%{_datadir}/vim/registry/
+install -m 0644 vim/registry/%{oname}.yaml %{buildroot}%{_datadir}/vim/registry/
