@@ -9,7 +9,7 @@
 Summary:		An open source speech synthesizer that supports 108 languages and accents
 Name:	espeak-ng
 Version:		1.52.0.1
-Release:		1
+Release:		2
 License:		GPLv3
 Group:	Sound
 Url:	https://github.com/espeak-ng/espeak-ng
@@ -117,6 +117,9 @@ Development files for eSpeak NG, a software speech synthesizer.
 # Put the pkgconfig file in the right place...
 mkdir -p %{buildroot}%{_libdir}/pkgconfig/
 mv %{buildroot}/usr/lib/pkgconfig/%{name}.pc %{buildroot}%{_libdir}/pkgconfig/
+# The template records libdir as ${prefix}/lib. On x86_64 that is the
+# 32-bit directory, so dependents link the wrong libespeak-ng.
+sed -i 's|^libdir=.*|libdir=%{_libdir}|' %{buildroot}%{_libdir}/pkgconfig/%{name}.pc
 # ... and also the vim registry file
 mkdir -p %{buildroot}%{_datadir}/vim/registry/
 install -m 0644 vim/registry/%{oname}.yaml %{buildroot}%{_datadir}/vim/registry/
